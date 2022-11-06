@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
-# Copyright 2022 by Sebastian Berger – V1.0
+# Copyright 2022 by Sebastian Berger – V1.0.1
 # All rights reserved.
 
 import sys
@@ -81,8 +81,8 @@ class NetamoDisplay:
     
     def initEpd(self):
         try:
-            epd = epd7in5_V2.EPD()
-            self.epd = epd.init()
+            self.epd = epd7in5_V2.EPD()
+            self.epd.init()
 
             self.image = Image.open(os.path.join(picdir, 'screen.jpg'))
             self.draw = ImageDraw.Draw(self.image)
@@ -99,14 +99,11 @@ class NetamoDisplay:
         self.drawBedroomModule()
 
         #draw image to epd
-        epd = epd7in5_V2.EPD()
-        epd.init()
-        epd.display(epd.getbuffer(self.image))
-        epd.sleep()
+        self.epd.display(self.epd.getbuffer(self.image))
+        self.epd.sleep()
 
         #exit programm
         exit()
-        
     
     def getFont(self, type='regular', size=20):
             return ImageFont.truetype(os.path.join(picdir, self.fonts[type]), size)
