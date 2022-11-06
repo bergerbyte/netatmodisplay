@@ -3,7 +3,7 @@
 
 I have been using the Netatmo weather station for years, but unfortunately I can only access the data via the app or browser. However, weather stations from other manufacturers with a display are difficult to read or too bright and simply not smart. 
 
-Netatmo brings a lot of data: Temperature, humidity, air pressure, CO2, these can be super displayed on a 7.5 "eInk display from Waveshare. 
+Netatmo brings a lot of data: Temperature, humidity, air pressure, CO2, these can be super displayed on a 7.5" eInk display from Waveshare. 
 
 ![Netatmo Display eInk](https://raw.githubusercontent.com/bergerbyte/netatmodisplay/main/assets/example.jpeg)
 
