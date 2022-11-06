@@ -1,0 +1,9 @@
+{
+    "client_id": "XXXXXXXX",
+    "client_secret": "XXXXXXXX",
+    "username": "mail@domain.de",
+    "password": "XXXXXXXX",
+    "device": "70:ee:XX:XX:XX:XX",
+    "latitude": 52.31,
+    "longitude": 13.24
+  }
