@@ -41,7 +41,7 @@ Go to folder boot Open the file wpa_supplicant.conf Paste the following and repl
     }
 
 **Connect through SSH**
-Open Terminal app on your MacBook and type the following command
+Open the Terminal or your SSH Client and type the following command
 
     $ ssh pi@raspberrypi.local
 
