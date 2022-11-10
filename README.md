@@ -1,4 +1,5 @@
 
+
 # Netatmo Display - 7.5" eInk / ePaper Display (How to)
 
 I have been using the Netatmo weather station for years, but unfortunately I can only access the data via the app or browser. However, weather stations from other manufacturers with a display are difficult to read or too bright and simply not smart. 
@@ -45,8 +46,12 @@ Open the Terminal or your SSH Client and type the following command
 
     $ ssh pi@raspberrypi.local
 
+**Enable the SPI**
 
-**Install the Netatmo API Python API (from https://github.com/philippelt/netatmo-api-python)**
+You can easily enable SPI via the `$ raspi-config`. You find this setting under Interface > SPI
+
+
+**Install the Netatmo API Python API (from https://github.com/rene-d/netatmo)**
 
     $ sudo pip3 install netatmo
 
@@ -58,8 +63,11 @@ You can easily unzip or clone this project into your Raspberry Pi home directory
 
 **Configure**
 
-Go to the folder of the project on your device and open the file 'config.json'.
-Enter your data from https://dev.netatmo.com, you can find the device MAC address in the Netatmo APP.
+Go to the folder of the project on your device and open the file "config.json".
+
+Enter your data from https://dev.netatmo.com, you have to create a new APP for this, the `client_id` and client_secret will be created automatically. For the `device` the MAC address of the Netatmo base station is used, you can find it in the app. 
+
+`username` and `password` are your login data from Netatmo https://dev.netatmo.com
 
 Latitude and longitude for your location you can easily google, these are used to show you the current weather as an icon and sunrise sunset. 
 
