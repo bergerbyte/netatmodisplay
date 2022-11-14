@@ -23,6 +23,7 @@ import netatmo
 import requests
 import json
 from datetime import datetime
+import ephem
 from waveshare_epd import epd7in5_V2
 from PIL import Image,ImageDraw,ImageFont
 
@@ -92,11 +93,14 @@ class NetamoDisplay:
     def drawScreen(self):
         self.initEpd()
 
+        
         self.drawCurrentWeatherImage()
         self.drawSunriseAndSunset()
         self.drawOutsideModule()
         self.drawLivingroomModule()
         self.drawBedroomModule()
+        self.drawCurrentDate()
+        self.drawNextFullMoon()
 
         #draw image to epd
         self.epd.display(self.epd.getbuffer(self.image))
@@ -114,35 +118,53 @@ class NetamoDisplay:
     def getMulti(self, value, offset):
             return len(self.getTempraturSpited(value)[0]) - offset
 
+    def getNextFullMoon(self):
+        return ephem.next_full_moon(datetime.now()).datetime()
+    
+    def drawCurrentDate(self):
+        currentDay = datetime.now().strftime("%-d.")
+        currentMonth = datetime.now().strftime("%B")
+
+        self.draw.text((50, 50), currentDay, font = self.getFont('bold', 85), fill = 0)
+        self.draw.text((50, 125), currentMonth[0:3] + '.', font = self.getFont('regular', 60), fill = 0)
+
     def drawCurrentWeatherImage(self):
         weatherImage = Image.open(os.path.join(picdir, self.weatherCodes[str(self.weatherAPIData['currentWeatherCode'])]['name'] + '.jpg'))
         self.image.paste(weatherImage, (self.weatherCodes[str(self.weatherAPIData['currentWeatherCode'])]['x'], self.weatherCodes[str(self.weatherAPIData['currentWeatherCode'])]['y']))
     
     def drawSunriseAndSunset(self):
         if self.weatherAPIData['sunrises'] and self.weatherAPIData['sunsets']:
-            sunriseImage = Image.open(os.path.join(picdir, 'sunrise.jpg'))
-            self.image.paste(sunriseImage, (20,72))
-            self.draw.text((35, 187), self.weatherAPIData['sunrises'][0][-5:], font = self.getFont('bold', 50), fill = 0)
-
             sunsetImage = Image.open(os.path.join(picdir, 'sunset.jpg'))
-            self.image.paste(sunsetImage, (615,72))
-            self.draw.text((630, 187), self.weatherAPIData['sunsets'][0][-5:], font = self.getFont('bold', 50), fill = 0)
+            self.image.paste(sunsetImage, (595,113))
+            self.draw.text((663, 114), self.weatherAPIData['sunsets'][0][-5:], font = self.getFont('medium', 45), fill = 0)
+
+            sunriseImage = Image.open(os.path.join(picdir, 'sunrise.jpg'))
+            self.image.paste(sunriseImage, (595,47))
+            self.draw.text((663, 55), self.weatherAPIData['sunrises'][0][-5:], font = self.getFont('medium', 45), fill = 0)
+    
+    def drawNextFullMoon(self):
+        moonImage = Image.open(os.path.join(picdir, 'moon.jpg'))
+        self.image.paste(moonImage, (595,167))
+        self.draw.text((667, 172), self.getNextFullMoon().strftime("%d.%m."), font = self.getFont('medium', 43), fill = 0)
+
 
     def drawOutsideModule(self):
         if self.netatmoData['outdoor']:
-            self.draw.text((350, 0), self.getTempraturSpited(self.netatmoData['outdoor']['Temperature'])[0], font = self.getFont('medium', 150), fill = 0)
-            self.draw.text((435 + (self.getMulti(self.netatmoData['outdoor']['Temperature'], 1) * 85), 83), '.' + self.getTempraturSpited(self.netatmoData['outdoor']['Temperature'])[1], font = self.getFont('medium', 60), fill = 0)
-            self.draw.text((435 + (self.getMulti(self.netatmoData['outdoor']['Temperature'], 1) * 85), 28), '°', font = self.getFont('medium', 65), fill = 0)
+            self.draw.text((385, 0), self.getTempraturSpited(self.netatmoData['outdoor']['Temperature'])[0], font = self.getFont('medium', 150), fill = 0)
+            self.draw.text((470 + (self.getMulti(self.netatmoData['outdoor']['Temperature'], 1) * 85), 83), '.' + self.getTempraturSpited(self.netatmoData['outdoor']['Temperature'])[1], font = self.getFont('medium', 60), fill = 0)
+            self.draw.text((470 + (self.getMulti(self.netatmoData['outdoor']['Temperature'], 1) * 85), 28), '°', font = self.getFont('medium', 65), fill = 0)
 
-            self.draw.text((210, 190), str(int(self.netatmoData['outdoor']['Humidity'])), font = self.getFont('bold', 45), fill = 0)
-            self.draw.text((263, 210), '%', font = self.getFont('medium', 24), fill = 0)
+            self.draw.text((225, 160), 'Luftfeuchte', font = self.getFont('bold', 30), fill = 0)
+            self.draw.text((225, 190), str(int(self.netatmoData['outdoor']['Humidity'])), font = self.getFont('bold', 45), fill = 0)
+            self.draw.text((278, 210), '%', font = self.getFont('medium', 24), fill = 0)
 
-            self.draw.text((430, 190), str(int(self.netatmoData['livingRoom']['Pressure'])), font = self.getFont('bold', 45), fill = 0)
-            self.draw.text((510 + (self.getMulti(self.netatmoData['livingRoom']['Pressure'], 3) * 30), 210), 'mbar', font = self.getFont('medium', 24), fill = 0)
+            self.draw.text((415, 160), "Luftdruck", font = self.getFont('bold', 30), fill = 0)
+            self.draw.text((415, 190), str(int(self.netatmoData['livingRoom']['Pressure'])), font = self.getFont('bold', 45), fill = 0)
+            self.draw.text((490 + (self.getMulti(self.netatmoData['livingRoom']['Pressure'], 3) * 30), 210), 'mbar', font = self.getFont('medium', 24), fill = 0)
         else:
-            self.draw.text((350, 20), 'ERROR', font = self.getFont(), fill = 0)
-            self.draw.text((210, 190), 'ERROR', font = self.getFont(), fill = 0)
-            self.draw.text((430, 190), 'ERROR', font = self.getFont(), fill = 0)
+            self.draw.text((355, 20), 'ERROR', font = self.getFont(), fill = 0)
+            self.draw.text((215, 190), 'ERROR', font = self.getFont(), fill = 0)
+            self.draw.text((435, 190), 'ERROR', font = self.getFont(), fill = 0)
     
     def drawLivingroomModule(self):
         if self.netatmoData['livingRoom']:
